@@ -1,21 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Security.Claims;
+﻿using LarchProvisionsWebsite.Models;
+using LarchProvisionsWebsite.Services;
+using LarchProvisionsWebsite.ViewModels.Manage;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Logging;
-using LarchProvisionsWebsite.Models;
-using LarchProvisionsWebsite.Services;
-using LarchProvisionsWebsite.ViewModels.Manage;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LarchProvisionsWebsite.Controllers
 {
     [Authorize]
     public class ManageController : Controller
     {
+        private ApplicationDbContext _context;
+
+        public ManageController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -59,6 +66,7 @@ namespace LarchProvisionsWebsite.Controllers
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
             };
+
             return View(model);
         }
 
@@ -316,6 +324,8 @@ namespace LarchProvisionsWebsite.Controllers
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
+        //get user info
+
         #region Helpers
 
         private void AddErrors(IdentityResult result)
@@ -343,6 +353,6 @@ namespace LarchProvisionsWebsite.Controllers
             return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
         }
 
-        #endregion
+        #endregion Helpers
     }
 }
